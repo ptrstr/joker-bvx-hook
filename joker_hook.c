@@ -10,9 +10,7 @@
 #include <unistd.h>
 #include <lzfse.h>
 
-
 #define VERBOSE
-
 
 static inline int verbose(const char *format, ...) {
 	#ifdef VERBOSE
@@ -32,28 +30,28 @@ uint8_t *tryBVX_hooked(uint8_t *rawCompressed, int32_t *filesize) {
 	if (!compressedBuffer)
 		return NULL;
 
-	*filesize -= (uintptr_t)compressedBuffer - (uintptr_t)rawCompressed;
+	size_t compressedSize = *filesize - ((uintptr_t)compressedBuffer - (uintptr_t)rawCompressed);
 
 	verbose("Header found at %p. %llu further than it's parent at %p\n", compressedBuffer, (uintptr_t)compressedBuffer - (uintptr_t)rawCompressed, rawCompressed);
 
-	uint8_t *decompressedBuffer = malloc(4 * *filesize);
-	if (!decompressedBuffer)
+	size_t decompressedSize = 4 * compressedSize; // 4 times bigger because the format gurantees the max compression is 4 times smaller
+	uint8_t *decompressedBuffer = malloc(decompressedSize);
+	if (!decompressedBuffer) {
+		verbose("Error while allocating %llu byte buffer\n", decompressedSize);
 		return NULL;
+	}
 
-	size_t result = lzfse_decode_buffer(decompressedBuffer, 4 * *filesize, compressedBuffer, *filesize, NULL);
+	decompressedSize = lzfse_decode_buffer(decompressedBuffer, decompressedSize, compressedBuffer, compressedSize, NULL);
 
-	verbose("Decompressed %llu bytes inside a %llu byte buffer. Shrinking...\n", result, *filesize);
+	verbose("Decompressed %llu bytes inside a %llu byte buffer. Shrinking...\n", decompressedSize, 4 * compressedSize);
 
-	*filesize = (int32_t)result;
-	decompressedBuffer = (uint8_t *)realloc(decompressedBuffer, *filesize);
+	decompressedBuffer = (uint8_t *)realloc(decompressedBuffer, decompressedSize);
+	if (!decompressedBuffer) {
+		verbose("Error while shrinking buffer\n");
+		return NULL;
+	}
 
-	verbose("Dumping decompressed kernelcache to `kernelcache.bin`n");
-	FILE *fp = fopen("kernelcache.bin", "w");
-	if (fp) {
-		fwrite(decompressedBuffer, 1, *filesize, fp);
-		fclose(fp);
-	} else
-		verbose("Couldn't create file. Check permissions\n");
+	*filesize = (int32_t)decompressedSize; // Yuck
 
 	return decompressedBuffer;
 }
