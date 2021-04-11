@@ -5,14 +5,14 @@ A hook for [Jonathan Levin's Joker tool](http://newosxbook.com/tools/joker.html)
 This has only been tested on Linux so you might have to do changes to build on \*OS (or others)
 
 ## Dependencies
-This depends on the `dl` library (which is pretty mcuh default on Unix) and [`lzfse`](https://github.com/lzfse/lzfse)
+This depends on the `dl` library (which is pretty much default on Unix) and [`lzfse`](https://github.com/lzfse/lzfse)
 
 Lots of love to that project as they do all the heavywork <3
 
 ## Building
 ```
 $ cd ./joker-bvx-hook
-$ gcc -all -shared -fPIC ./joker_hook.c -o joker_hook.so -ldl -llzfse
+$ gcc -Wall -shared -fPIC ./joker_hook.c -o joker_hook.so -ldl -llzfse
 ```
 
 ## Using
