@@ -1,6 +1,10 @@
 # joker-bvx-hook
 A hook for [Jonathan Levin's Joker tool](http://newosxbook.com/tools/joker.html) to support BVX/lzfse compression
 
+# Deprecation notice
+Use [jtool2](http://newosxbook.com/tools/jtool.html) in favor. It already has support for this compression and supports more kernelcache versions.
+It was a fun (1 day) ride.
+
 ## Notice
 This has only been tested on Linux so you might have to do changes to build on \*OS (or others)
 
