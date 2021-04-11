@@ -1,5 +1,5 @@
 # joker-bvx-hook
-A hook for Jonathan Levin's Joker tool to support BVX/lzfse compression
+A hook for [Jonathan Levin's Joker tool](http://newosxbook.com/tools/joker.html) to support BVX/lzfse compression
 
 ## Notice
 This has only been tested on Linux so you might have to do changes to build on \*OS (or others)
