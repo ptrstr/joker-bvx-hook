@@ -11,6 +11,7 @@
 #include <lzfse.h>
 
 #define VERBOSE
+#define JOKER_VERSION 2
 
 static inline int verbose(const char *format, ...) {
 	#ifdef VERBOSE
@@ -26,7 +27,7 @@ static inline int verbose(const char *format, ...) {
 }
 
 uint8_t *tryBVX_hooked(uint8_t *rawCompressed, int32_t *filesize) {
-	uint8_t *compressedBuffer = (uint8_t *)strstr((char *)rawCompressed, "bvx2");
+	uint8_t *compressedBuffer = (uint8_t *)memmem(rawCompressed, *filesize, "bvx2", 4);
 	if (!compressedBuffer)
 		return NULL;
 
@@ -83,7 +84,13 @@ uint8_t hook(void *orig, void *hook) {
 
 __attribute__((constructor))
 static void hook_ctor() {
+	#if JOKER_VERSION == 1
 	void *tryBVX_orig = (void *)0x407260;
+	#elif JOKER_VERSION == 2
+	void *tryBVX_orig = (void *)0x422c6f;
+	#else
+	#error "JOKER_VERSION must be either 1 or 2"
+	#endif
 
 	hook(tryBVX_orig, tryBVX_hooked);
 }
